@@ -16,6 +16,7 @@ class Countdown extends Component {
       setTimeout(() => {
         this.setState((prevState) => ({ countdown: --prevState.countdown }));
       }, 1000);
+    this.state.countdown <= 0 && this.props.endCountdown();
   }
 
   render() {
