@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Text, View, Button } from "react-native";
 import he from "he";
 
@@ -7,6 +7,18 @@ import Countdown from "../common/Countdown";
 import Spinner from "../common/Spinner";
 import styles from "../Styles/Stylesheet";
 import AnswerButton from "../common/AnswerButton";
+
+const FinishedScreen = (props) => {
+  return (
+    <View>
+      <Text>Well done, you scored {props.points} points.</Text>
+      <Text>
+        Now we will see if you can keep these point for the final round
+      </Text>
+      <Button title={"Proceed"}></Button>
+    </View>
+  );
+};
 
 const PointsBuilderQuestions = (props) => {
   let answers = [
@@ -76,6 +88,7 @@ const PointsBuilderQuestions = (props) => {
 class PointsBuilder extends Component {
   state = {
     points: 0,
+    pointsBuilderCountdown: true,
     questionNumber: 0,
     questions: [],
     questionsLoaded: false,
@@ -92,8 +105,12 @@ class PointsBuilder extends Component {
       });
   }
 
-  endCountdown = () => {
+  endReadyCountdown = () => {
     this.setState({ readyCountdown: false });
+  };
+
+  endPointsBuilderCountdown = () => {
+    this.setState({ pointsBuilderCountdown: false });
   };
 
   onPressAnswerButton = (e, correctAnswer) => {
@@ -113,22 +130,32 @@ class PointsBuilder extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>{this.state.points}</Text>
         {this.state.questionsLoaded ? (
-          // this.state.readyCountdown ? (
-          //   <Countdown
-          //     countdown={3}
-          //     endCountdown={this.endCountdown}
-          //     type={"largeCountdown"}
-          //   />
-          // ) : (
-          <PointsBuilderQuestions
-            onPressAnswerButton={this.onPressAnswerButton}
-            questions={this.state.questions}
-            questionNumber={this.state.questionNumber}
-          />
+          this.state.readyCountdown ? (
+            <Countdown
+              countdown={3}
+              endCountdown={this.endReadyCountdown}
+              type={"largeCountdown"}
+            />
+          ) : this.state.pointsBuilderCountdown ? (
+            <Fragment>
+              <Text>{this.state.points}</Text>
+              <Countdown
+                countdown={60}
+                endCountdown={this.endPointsBuilderCountdown}
+                type={"largeCountdown"}
+              />
+              <PointsBuilderQuestions
+                onPressAnswerButton={this.onPressAnswerButton}
+                questions={this.state.questions}
+                questionNumber={this.state.questionNumber}
+              />
+            </Fragment>
+          ) : (
+            //  Finsihed Screen
+            <FinishedScreen points={this.state.points} />
+          )
         ) : (
-          // )
           <Spinner />
         )}
       </View>

@@ -1,31 +1,23 @@
-import React, { Component } from "react";
+import * as React from "react";
+import { render } from "react-dom";
 import { View, Text } from "react-native";
 
 //  Styles
 import styles from "../Styles/Stylesheet";
 
-class Countdown extends Component {
-  state = { countdown: null, style: null };
+const Countdown = (props) => {
+  const [counter, setCounter] = React.useState(props.countdown);
 
-  componentDidMount() {
-    this.setState({ countdown: this.props.countdown });
-  }
+  React.useEffect(() => {
+    counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
+    counter <= 0 && props.endCountdown();
+  }, [counter]);
 
-  componentDidUpdate() {
-    this.state.countdown > 0 &&
-      setTimeout(() => {
-        this.setState((prevState) => ({ countdown: --prevState.countdown }));
-      }, 1000);
-    this.state.countdown <= 0 && this.props.endCountdown();
-  }
-
-  render() {
-    return (
-      <View style={styles.countdownContainer}>
-        <Text style={styles[this.props.type]}>{this.state.countdown}</Text>
-      </View>
-    );
-  }
-}
+  return (
+    <View>
+      <Text style={styles[props.type]}>{counter}</Text>
+    </View>
+  );
+};
 
 export default Countdown;
